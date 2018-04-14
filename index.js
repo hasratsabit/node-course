@@ -5,8 +5,40 @@ const mongoose = require('mongoose');
 const path = require('path');
 const bodyParser = require('body-parser');
 
+// const _ = require('lodash');
+// const fs = require('fs');
+// const os = require('os');
+
+// const user = os.userInfo();
 
 
+// fs.appendFile('greeting.pdf', `This is a greeting from ${user.username}`, (err) => {
+// 	if(err) {
+// 		console.log('error occurred');
+// 	}
+// })
+
+// const str = 'abs';
+// const testStr = _.isString(str);
+// console.log(testStr);
+
+// const arr = _.chunk(['a', 'b', 'c', 'd'], 2);
+// console.log(arr);
+
+const command = process.argv[2];
+
+	if(command === 'add') {
+		console.log('Adding notes');
+	}else if (command === 'remove') {
+		console.log('Removing notes');
+	}else if (command === 'read'){
+		console.log('Reading notes');
+	}else if(command === 'list') {
+		console.log('Listing all lists');
+	}else {
+		console.log('Command not recognized.');
+	}
+ 
 
 // ==========================================================
 // 		 									DATABASE
@@ -30,7 +62,7 @@ const bodyParser = require('body-parser');
 
 	app.use(bodyParser.urlencoded({ extended: false }));
 	// app.use('/uploads', express.static('uploads'));
-	app.use(express.static(__dirname + '/')); 
+	app.use(express.static(__dirname + '/dist')); 
 	app.use(bodyParser.json());
 	
 
@@ -58,7 +90,7 @@ const bodyParser = require('body-parser');
 
 	// Other routes goes to the client side.
 	app.get('*', (req, res) => {
-	  res.sendFile(path.join(__dirname + '/index.html'));
+		res.sendFile(path.join(__dirname + '/dist/index.html'));
 	});
 
 

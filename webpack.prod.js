@@ -3,6 +3,7 @@ const common = require('./webpack.common.js');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 const UglifyJSPlugin = require('uglifyjs-webpack-plugin');
 const webpack = require('webpack');
+const CleanWebpackPlugin = require('clean-webpack-plugin');
 
 
 module.exports = merge(common, {
@@ -32,6 +33,7 @@ module.exports = merge(common, {
     },
 
     plugins: [
+        new CleanWebpackPlugin(['dist']),
         new MiniCssExtractPlugin({
             filename: "style-[contenthash:10].css",
           }),
