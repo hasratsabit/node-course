@@ -5,6 +5,10 @@ const mongoose = require('mongoose');
 const path = require('path');
 const bodyParser = require('body-parser');
 
+
+const notes = require('./course/notes');
+const yargs = require('yargs');
+const argv = yargs.argv;
 // const _ = require('lodash');
 // const fs = require('fs');
 // const os = require('os');
@@ -25,59 +29,72 @@ const bodyParser = require('body-parser');
 // const arr = _.chunk(['a', 'b', 'c', 'd'], 2);
 // console.log(arr);
 
-const command = process.argv[2];
+const command = argv._[0];
 
-	if(command === 'add') {
-		console.log('Adding notes');
-	}else if (command === 'remove') {
-		console.log('Removing notes');
-	}else if (command === 'read'){
-		console.log('Reading notes');
-	}else if(command === 'list') {
-		console.log('Listing all lists');
+
+if (command === 'add') {
+	let note = notes.addNote(argv.title, argv.body);
+	if(note){
+		console.log('Note is created');
+		console.log('-----');
+		console.log(`Title ${note.title}`);
+		console.log(`Title ${note.body}`);
 	}else {
-		console.log('Command not recognized.');
+		console.log('Note is already taken');
 	}
- 
+} else if (command === 'remove') {
+	let noteDeleted = notes.removeNote(argv.title);
+	let message = noteDeleted ? 'Note successfully deleted.' : 'Note was not found.';
+	console.log(message);
+} else if (command === 'read') {
+	console.log('Reading notes');
+} else if (command === 'list') {
+	console.log('Listing all lists');
+} else {
+	console.log('Command not recognized.');
+}
+
 
 // ==========================================================
 // 		 									DATABASE
 // ==========================================================
 
-	// Use global promise instead of mongoose.
-	mongoose.Promise = global.Promise;
+// Use global promise instead of mongoose.
+mongoose.Promise = global.Promise;
 
-	// mongoose.connect(config.uri, {useMongoClient: true}, (err) => {
-	// 	if(err){
-	// 		console.log('Could not connect to database', err);
-	// 	}else {
-	// 		console.log('Connected to datase ' + config.db);
-	// 	}
-	// })
+// mongoose.connect(config.uri, {useMongoClient: true}, (err) => {
+// 	if(err){
+// 		console.log('Could not connect to database', err);
+// 	}else {
+// 		console.log('Connected to datase ' + config.db);
+// 	}
+// })
 
 
 // ==========================================================
 // 		 									MIDDLEWARES
 // ==========================================================
 
-	app.use(bodyParser.urlencoded({ extended: false }));
-	// app.use('/uploads', express.static('uploads'));
-	app.use(express.static(__dirname + '/dist')); 
-	app.use(bodyParser.json());
-	
+app.use(bodyParser.urlencoded({
+	extended: false
+}));
+// app.use('/uploads', express.static('uploads'));
+app.use(express.static(__dirname + '/dist'));
+app.use(bodyParser.json());
 
-	app.use((req, res, next) => {
-		res.header("Access-Control-Allow-Origin", "*");
-		res.header(
-		  "Access-Control-Allow-Headers",
-		  "Origin, X-Requested-With, Content-Type, Accept, Authorization"
-		);
-		if (req.method === "OPTIONS") {
-		  res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET, OPTIONS");
-		  return res.status(200).json({});
-		}
-		next();
-	  });
+
+app.use((req, res, next) => {
+	res.header("Access-Control-Allow-Origin", "*");
+	res.header(
+		"Access-Control-Allow-Headers",
+		"Origin, X-Requested-With, Content-Type, Accept, Authorization"
+	);
+	if (req.method === "OPTIONS") {
+		res.header("Access-Control-Allow-Methods", "PUT, POST, PATCH, DELETE, GET, OPTIONS");
+		return res.status(200).json({});
+	}
+	next();
+});
 
 
 
@@ -86,12 +103,12 @@ const command = process.argv[2];
 // 		 									ROUTES
 // ==========================================================
 
-	// app.use('/contact', contactRoute)
+// app.use('/contact', contactRoute)
 
-	// Other routes goes to the client side.
-	app.get('*', (req, res) => {
-		res.sendFile(path.join(__dirname + '/dist/index.html'));
-	});
+// Other routes goes to the client side.
+app.get('*', (req, res) => {
+	res.sendFile(path.join(__dirname + '/dist/index.html'));
+});
 
 
 
@@ -99,8 +116,8 @@ const command = process.argv[2];
 // 		 									SERVER
 // ==========================================================
 
-	const port = process.env.PORT || 8080;
+const port = process.env.PORT || 8080;
 
-	app.listen(port, () => {
-		console.log(`Connected to port ${port}`);
-	})
+app.listen(port, () => {
+	console.log(`Connected to port ${port}`);
+})
